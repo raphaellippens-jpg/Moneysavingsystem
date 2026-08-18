@@ -12,165 +12,178 @@
 
 <body>
 
-    <div class="app">
+<div class="app">
 
-        <!-- LOGIN -->
+    <!-- LOGIN -->
+    <section id="loginScreen">
 
-        <section id="loginScreen">
+        <h1>💰 MONEY SYSTEM</h1>
 
-            <h1>💰 MONEY SYSTEM</h1>
+        <input
+            id="loginUsername"
+            type="text"
+            placeholder="Username"
+            autocomplete="username"
+        >
 
-            <input
-                id="loginUsername"
-                type="text"
-                placeholder="Username"
-                autocomplete="username"
-            >
+        <input
+            id="loginPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
 
-            <input
-                id="loginPassword"
-                type="password"
-                placeholder="Password"
-                autocomplete="current-password"
-            >
+        <button id="loginButton" class="primary">
+            🔐 LOG IN
+        </button>
 
-            <button id="loginButton" class="primary">
-                🔐 LOG IN
-            </button>
+        <button id="showCreateButton" class="secondary">
+            CREATE ACCOUNT
+        </button>
 
-            <button id="showCreateButton" class="secondary">
-                CREATE ACCOUNT
-            </button>
+        <p id="loginMessage" class="message"></p>
 
-            <p id="loginMessage" class="message"></p>
-
-        </section>
-
-
-        <!-- CREATE ACCOUNT -->
-
-        <section id="createScreen" class="hidden">
-
-            <h1>CREATE ACCOUNT</h1>
-
-            <input
-                id="newUsername"
-                type="text"
-                placeholder="Username"
-            >
-
-            <input
-                id="newPassword"
-                type="password"
-                placeholder="Password"
-            >
-
-            <button id="createButton" class="primary">
-                CREATE ACCOUNT
-            </button>
-
-            <button id="backToLoginButton" class="secondary">
-                BACK
-            </button>
-
-            <p id="createMessage" class="message"></p>
-
-        </section>
+    </section>
 
 
-        <!-- NORMAL USER -->
+    <!-- CREATE ACCOUNT -->
+    <section id="createScreen" class="hidden">
 
-        <section id="userScreen" class="hidden">
+        <h1>CREATE ACCOUNT</h1>
 
-            <h1 id="welcomeText">
-                Welcome!
-            </h1>
+        <input
+            id="newUsername"
+            type="text"
+            placeholder="Username"
+            autocomplete="username"
+        >
 
-            <div class="moneyContainer">
+        <input
+            id="newPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="new-password"
+        >
 
-                <div class="moneyBox balanceBox">
+        <button id="createButton" class="primary">
+            CREATE ACCOUNT
+        </button>
 
-                    <div class="moneyTitle">
-                        💶 BALANCE
-                    </div>
+        <button id="backToLoginButton" class="secondary">
+            BACK
+        </button>
 
-                    <div
-                        id="balanceValue"
-                        class="moneyValue"
-                    >
-                        €0.00
-                    </div>
+        <p id="createMessage" class="message"></p>
 
+    </section>
+
+
+    <!-- NORMAL USER -->
+    <section id="userScreen" class="hidden">
+
+        <h1 id="welcomeText">
+            Welcome!
+        </h1>
+
+        <div class="moneyContainer">
+
+            <div class="moneyBox balanceBox">
+
+                <div class="moneyTitle">
+                    💶 BALANCE
                 </div>
 
-
-                <div class="moneyBox savedBox">
-
-                    <div class="moneyTitle">
-                        🏦 SAVED
-                    </div>
-
-                    <div
-                        id="savedValue"
-                        class="moneyValue"
-                    >
-                        €0.00
-                    </div>
-
+                <div
+                    id="balanceValue"
+                    class="moneyValue"
+                >
+                    €0.00
                 </div>
 
             </div>
 
 
-            <div class="actionButtons">
+            <div class="moneyBox savedBox">
 
-                <button id="buyButton" class="buy">
-                    🔴 BUY
-                </button>
+                <div class="moneyTitle">
+                    🏦 SAVED
+                </div>
 
-                <button id="saveButton" class="save">
-                    🟢 SAVE
-                </button>
-
-                <button id="withdrawButton" class="withdraw">
-                    🟣 WITHDRAW
-                </button>
+                <div
+                    id="savedValue"
+                    class="moneyValue"
+                >
+                    €0.00
+                </div>
 
             </div>
 
+        </div>
 
-            <p id="userMessage" class="message"></p>
 
+        <div class="actionButtons">
 
-            <button id="userLogoutButton" class="logout">
-                LOG OUT
+            <button id="buyButton" class="buy">
+                🔴 BUY
             </button>
 
-        </section>
-
-
-        <!-- MOM PANEL -->
-
-        <section id="adminScreen" class="hidden">
-
-            <h1 class="adminTitle">
-                👑 MOM PANEL
-            </h1>
-
-            <h2>Accounts</h2>
-
-            <div id="accountList"></div>
-
-            <button id="adminLogoutButton" class="logout">
-                LOG OUT
+            <button id="saveButton" class="save">
+                🟢 SAVE
             </button>
 
-        </section>
+            <button id="withdrawButton" class="withdraw">
+                🟣 WITHDRAW
+            </button>
 
-    </div>
+        </div>
+
+        <p id="userMessage" class="message"></p>
+
+        <button id="userLogoutButton" class="logout">
+            LOG OUT
+        </button>
+
+        <button
+            id="deleteOwnAccountButton"
+            class="deleteOwn"
+        >
+            🗑️ DELETE MY ACCOUNT
+        </button>
+
+    </section>
 
 
-    <script src="script.js"></script>
+    <!-- MOM PANEL -->
+    <section id="adminScreen" class="hidden">
+
+        <h1 class="adminTitle">
+            👑 MOM PANEL
+        </h1>
+
+        <h2>Accounts</h2>
+
+        <div id="accountList"></div>
+
+        <button
+            id="deleteMomButton"
+            class="deleteMom"
+        >
+            🗑️ DELETE MOM ACCOUNT
+        </button>
+
+        <button
+            id="adminLogoutButton"
+            class="logout"
+        >
+            LOG OUT
+        </button>
+
+    </section>
+
+</div>
+
+
+<script src="script.js"></script>
 
 </body>
 </html>
