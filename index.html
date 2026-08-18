@@ -3,48 +3,31 @@
 
 <head>
     <meta charset="UTF-8">
-
     <meta
         name="viewport"
         content="width=device-width, initial-scale=1.0"
     >
 
-    <meta
-        name="theme-color"
-        content="#62B9E8"
-    >
-
     <title>Money System</title>
 
-    <link
-        rel="stylesheet"
-        href="style.css"
-    >
+    <link rel="stylesheet" href="style.css">
 </head>
 
 <body>
 
 <div class="app">
 
-    <!-- =====================================================
-         LOGIN
-    ====================================================== -->
+    <!-- LOGIN -->
 
-    <section
-        id="loginScreen"
-        class="screen"
-    >
+    <section id="loginScreen">
 
-        <h1>
-            💰 MONEY SYSTEM
-        </h1>
+        <h1>💰 MONEY SYSTEM</h1>
 
         <input
             id="loginUsername"
             type="text"
             placeholder="Username"
             autocomplete="username"
-            autocapitalize="none"
         >
 
         <input
@@ -57,7 +40,6 @@
         <button
             id="loginButton"
             class="primary"
-            type="button"
         >
             🔐 LOG IN
         </button>
@@ -65,7 +47,6 @@
         <button
             id="showCreateButton"
             class="secondary"
-            type="button"
         >
             CREATE ACCOUNT
         </button>
@@ -78,25 +59,20 @@
     </section>
 
 
-    <!-- =====================================================
-         CREATE ACCOUNT
-    ====================================================== -->
+    <!-- CREATE ACCOUNT -->
 
     <section
         id="createScreen"
-        class="screen hidden"
+        class="hidden"
     >
 
-        <h1>
-            CREATE ACCOUNT
-        </h1>
+        <h1>CREATE ACCOUNT</h1>
 
         <input
             id="newUsername"
             type="text"
             placeholder="Username"
             autocomplete="username"
-            autocapitalize="none"
         >
 
         <input
@@ -109,7 +85,6 @@
         <button
             id="createButton"
             class="primary"
-            type="button"
         >
             CREATE ACCOUNT
         </button>
@@ -117,7 +92,6 @@
         <button
             id="backToLoginButton"
             class="secondary"
-            type="button"
         >
             BACK
         </button>
@@ -130,13 +104,11 @@
     </section>
 
 
-    <!-- =====================================================
-         NORMAL USER
-    ====================================================== -->
+    <!-- NORMAL USER -->
 
     <section
         id="userScreen"
-        class="screen hidden"
+        class="hidden"
     >
 
         <h1 id="welcomeText">
@@ -184,7 +156,6 @@
             <button
                 id="buyButton"
                 class="buy"
-                type="button"
             >
                 🔴 BUY
             </button>
@@ -192,7 +163,6 @@
             <button
                 id="saveButton"
                 class="save"
-                type="button"
             >
                 🟢 SAVE
             </button>
@@ -200,33 +170,27 @@
             <button
                 id="withdrawButton"
                 class="withdraw"
-                type="button"
             >
                 🟣 WITHDRAW
             </button>
 
         </div>
 
-
         <p
             id="userMessage"
             class="message"
         ></p>
 
-
         <button
             id="userLogoutButton"
             class="logout"
-            type="button"
         >
             LOG OUT
         </button>
 
-
         <button
             id="deleteOwnAccountButton"
             class="deleteOwn"
-            type="button"
         >
             🗑️ DELETE MY ACCOUNT
         </button>
@@ -234,83 +198,49 @@
     </section>
 
 
-    <!-- =====================================================
-         MOM / ADMIN
-    ====================================================== -->
+    <!-- MOM PANEL -->
 
     <section
         id="adminScreen"
-        class="screen hidden"
+        class="hidden"
     >
 
         <h1 class="adminTitle">
             👑 MOM PANEL
         </h1>
 
-        <h2>
-            Accounts
-        </h2>
+        <h2>Accounts</h2>
 
-        <div
-            id="accountList"
-            class="accountList"
-        ></div>
-
+        <div id="accountList"></div>
 
         <button
             id="deleteMomButton"
             class="deleteMom"
-            type="button"
         >
             🗑️ DELETE MOM ACCOUNT
         </button>
 
-
         <button
             id="adminLogoutButton"
             class="logout"
-            type="button"
         >
             LOG OUT
         </button>
 
     </section>
 
-
-    <!-- =====================================================
-         LOADING
-    ====================================================== -->
-
-    <div
-        id="loading"
-        class="loading hidden"
-    >
-        <div class="loadingBox">
-            <div class="spinner"></div>
-
-            <div id="loadingText">
-                Connecting...
-            </div>
-        </div>
-    </div>
-
 </div>
 
 
-<!-- =========================================================
-     SUPABASE
+<!--
+    IMPORTANT:
 
-     THIS MUST LOAD BEFORE script.js
-========================================================= -->
+    Supabase MUST load before script.js.
+-->
 
 <script
     src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"
 ></script>
-
-
-<!-- =========================================================
-     MONEY SYSTEM
-========================================================= -->
 
 <script src="script.js"></script>
 
