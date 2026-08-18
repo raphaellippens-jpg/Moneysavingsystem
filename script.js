@@ -1,6 +1,5 @@
 /* =========================================================
    MONEY SYSTEM
-   script.js
 ========================================================= */
 
 
@@ -9,8 +8,8 @@
 ========================================================= */
 
 /*
-   CHANGE THIS ONE LINE if you want
-   a different MOM/admin username.
+   CHANGE ONLY THIS LINE if you want
+   to change the MOM username.
 */
 
 const ADMIN_USERNAME = "mom";
@@ -34,14 +33,6 @@ let currentUser = null;
    MONEY PRECISION
 ========================================================= */
 
-/*
-   JavaScript can have tiny floating-point
-   errors with numbers such as 0.03.
-
-   These functions force everything to
-   exactly two decimal places.
-*/
-
 function moneyToCents(amount) {
 
     return Math.round(
@@ -50,13 +41,11 @@ function moneyToCents(amount) {
 
 }
 
-
 function centsToMoney(cents) {
 
     return cents / 100;
 
 }
-
 
 function cleanMoney(amount) {
 
@@ -72,66 +61,41 @@ function cleanMoney(amount) {
 ========================================================= */
 
 const loginScreen =
-    document.getElementById(
-        "loginScreen"
-    );
+    document.getElementById("loginScreen");
 
 const createScreen =
-    document.getElementById(
-        "createScreen"
-    );
+    document.getElementById("createScreen");
 
 const userScreen =
-    document.getElementById(
-        "userScreen"
-    );
+    document.getElementById("userScreen");
 
 const adminScreen =
-    document.getElementById(
-        "adminScreen"
-    );
-
+    document.getElementById("adminScreen");
 
 const loginUsername =
-    document.getElementById(
-        "loginUsername"
-    );
+    document.getElementById("loginUsername");
 
 const loginPassword =
-    document.getElementById(
-        "loginPassword"
-    );
-
+    document.getElementById("loginPassword");
 
 const newUsername =
-    document.getElementById(
-        "newUsername"
-    );
+    document.getElementById("newUsername");
 
 const newPassword =
-    document.getElementById(
-        "newPassword"
-    );
-
+    document.getElementById("newPassword");
 
 const loginMessage =
-    document.getElementById(
-        "loginMessage"
-    );
+    document.getElementById("loginMessage");
 
 const createMessage =
-    document.getElementById(
-        "createMessage"
-    );
+    document.getElementById("createMessage");
 
 const userMessage =
-    document.getElementById(
-        "userMessage"
-    );
+    document.getElementById("userMessage");
 
 
 /* =========================================================
-   STORAGE FUNCTIONS
+   STORAGE
 ========================================================= */
 
 function saveDatabase() {
@@ -145,26 +109,18 @@ function saveDatabase() {
 
 
 /* =========================================================
-   SCREEN MANAGEMENT
+   SCREENS
 ========================================================= */
 
 function hideAllScreens() {
 
-    loginScreen.classList.add(
-        "hidden"
-    );
+    loginScreen.classList.add("hidden");
 
-    createScreen.classList.add(
-        "hidden"
-    );
+    createScreen.classList.add("hidden");
 
-    userScreen.classList.add(
-        "hidden"
-    );
+    userScreen.classList.add("hidden");
 
-    adminScreen.classList.add(
-        "hidden"
-    );
+    adminScreen.classList.add("hidden");
 
 }
 
@@ -173,9 +129,7 @@ function showLogin() {
 
     hideAllScreens();
 
-    loginScreen.classList.remove(
-        "hidden"
-    );
+    loginScreen.classList.remove("hidden");
 
 }
 
@@ -184,9 +138,7 @@ function showCreateAccount() {
 
     hideAllScreens();
 
-    createScreen.classList.remove(
-        "hidden"
-    );
+    createScreen.classList.remove("hidden");
 
 }
 
@@ -204,15 +156,12 @@ function createAccount() {
         newPassword.value;
 
 
-    createMessage.className =
-        "message";
+    createMessage.className = "message";
 
 
     if (!username || !password) {
 
-        createMessage.classList.add(
-            "error"
-        );
+        createMessage.classList.add("error");
 
         createMessage.textContent =
             "Enter a username and password.";
@@ -225,18 +174,12 @@ function createAccount() {
         username.toLowerCase();
 
 
-    /*
-       The admin username is reserved.
-    */
-
     if (
         key ===
         ADMIN_USERNAME.toLowerCase()
     ) {
 
-        createMessage.classList.add(
-            "error"
-        );
+        createMessage.classList.add("error");
 
         createMessage.textContent =
             "That username is reserved.";
@@ -247,9 +190,7 @@ function createAccount() {
 
     if (accounts[key]) {
 
-        createMessage.classList.add(
-            "error"
-        );
+        createMessage.classList.add("error");
 
         createMessage.textContent =
             "That username already exists.";
@@ -274,9 +215,7 @@ function createAccount() {
     saveDatabase();
 
 
-    createMessage.classList.add(
-        "success"
-    );
+    createMessage.classList.add("success");
 
     createMessage.textContent =
         "Account created successfully!";
@@ -308,9 +247,7 @@ function login() {
 
     if (!username || !password) {
 
-        loginMessage.classList.add(
-            "error"
-        );
+        loginMessage.classList.add("error");
 
         loginMessage.textContent =
             "Enter your username and password.";
@@ -324,7 +261,7 @@ function login() {
 
 
     /* =====================================================
-       MOM / ADMIN LOGIN
+       MOM LOGIN
     ===================================================== */
 
     if (
@@ -333,7 +270,7 @@ function login() {
     ) {
 
         /*
-           First login creates the MOM account.
+           First MOM login creates the account.
         */
 
         if (!accounts[key]) {
@@ -352,9 +289,7 @@ function login() {
 
             };
 
-
             saveDatabase();
-
 
             alert(
                 "MOM admin account created!"
@@ -388,7 +323,7 @@ function login() {
 
 
     /* =====================================================
-       NORMAL ACCOUNT LOGIN
+       NORMAL ACCOUNT
     ===================================================== */
 
     if (!accounts[key]) {
@@ -428,16 +363,14 @@ function login() {
 
 
 /* =========================================================
-   NORMAL USER PANEL
+   USER PANEL
 ========================================================= */
 
 function showUserPanel() {
 
     hideAllScreens();
 
-    userScreen.classList.remove(
-        "hidden"
-    );
+    userScreen.classList.remove("hidden");
 
     updateUserDisplay();
 
@@ -517,17 +450,6 @@ function buyMoney() {
         accounts[currentUser];
 
 
-    /*
-       Convert BOTH values to cents.
-
-       Example:
-
-       €0.03 = 3 cents
-
-       This completely avoids the
-       0.03 floating-point problem.
-    */
-
     const amountCents =
         moneyToCents(amount);
 
@@ -571,7 +493,7 @@ function buyMoney() {
 
 
 /* =========================================================
-   SAVE MONEY
+   SAVE
 ========================================================= */
 
 function saveMoney() {
@@ -608,11 +530,6 @@ function saveMoney() {
     const account =
         accounts[currentUser];
 
-
-    /*
-       Again, everything is handled
-       in integer cents.
-    */
 
     const amountCents =
         moneyToCents(amount);
@@ -751,19 +668,9 @@ function showUserMessage(
         "message";
 
 
-    if (error) {
-
-        userMessage.classList.add(
-            "error"
-        );
-
-    } else {
-
-        userMessage.classList.add(
-            "success"
-        );
-
-    }
+    userMessage.classList.add(
+        error ? "error" : "success"
+    );
 
 
     userMessage.textContent =
@@ -773,8 +680,7 @@ function showUserMessage(
     setTimeout(
         function() {
 
-            userMessage.textContent =
-                "";
+            userMessage.textContent = "";
 
         },
         2500
@@ -800,10 +706,6 @@ function showAdminPanel() {
 }
 
 
-/* =========================================================
-   REFRESH MOM ACCOUNT LIST
-========================================================= */
-
 function refreshAdminPanel() {
 
     const list =
@@ -820,8 +722,8 @@ function refreshAdminPanel() {
     ) {
 
         /*
-           Never show the MOM account
-           in the normal account list.
+           MOM does not appear as a normal
+           account in the account list.
         */
 
         if (
@@ -846,8 +748,6 @@ function refreshAdminPanel() {
         div.className =
             "account";
 
-
-        /* ACCOUNT INFORMATION */
 
         const info =
             document.createElement(
@@ -915,19 +815,12 @@ function refreshAdminPanel() {
         info.appendChild(saved);
 
 
-        /* BUTTON CONTAINER */
+        /*
+           MOM ONLY GETS:
+           ➕ Increase Balance
 
-        const buttons =
-            document.createElement(
-                "div"
-            );
-
-
-        buttons.className =
-            "adminButtons";
-
-
-        /* INCREASE BUTTON */
+           NO delete button for other accounts.
+        */
 
         const increaseButton =
             document.createElement(
@@ -953,44 +846,11 @@ function refreshAdminPanel() {
         );
 
 
-        /* DELETE BUTTON */
-
-        const deleteButton =
-            document.createElement(
-                "button"
-            );
-
-
-        deleteButton.className =
-            "delete";
-
-
-        deleteButton.textContent =
-            "🗑️ Delete account";
-
-
-        deleteButton.addEventListener(
-            "click",
-            function() {
-
-                deleteAccount(key);
-
-            }
-        );
-
-
-        buttons.appendChild(
-            increaseButton
-        );
-
-        buttons.appendChild(
-            deleteButton
-        );
-
-
         div.appendChild(info);
 
-        div.appendChild(buttons);
+        div.appendChild(
+            increaseButton
+        );
 
 
         list.appendChild(div);
@@ -1052,9 +912,7 @@ function increaseBalance(key) {
 
 
     const amountCents =
-        moneyToCents(
-            amount
-        );
+        moneyToCents(amount);
 
 
     account.balance =
@@ -1083,46 +941,38 @@ function increaseBalance(key) {
 
 
 /* =========================================================
-   MOM: DELETE ACCOUNT
+   NORMAL USER: DELETE OWN ACCOUNT
 ========================================================= */
 
-function deleteAccount(key) {
+function deleteOwnAccount() {
 
-    const account =
-        accounts[key];
-
-
-    if (!account) {
+    if (!currentUser) {
         return;
     }
 
 
-    /*
-       Extra safety:
-       MOM can never delete the admin
-       account through this function.
-    */
-
     if (
-        key ===
+        currentUser ===
         ADMIN_USERNAME.toLowerCase()
     ) {
 
-        alert(
-            "The MOM account cannot be deleted here."
-        );
-
         return;
     }
+
+
+    const account =
+        accounts[currentUser];
 
 
     const confirmed =
         confirm(
-            "Delete the account '" +
+            "⚠️ DELETE ACCOUNT?\n\n" +
+            "Username: " +
             account.username +
-            "'?\n\n" +
-            "This will permanently remove " +
-            "its Balance and Saved money."
+            "\n\n" +
+            "This will permanently delete " +
+            "your Balance and Saved money.\n\n" +
+            "Are you sure?"
         );
 
 
@@ -1131,17 +981,75 @@ function deleteAccount(key) {
     }
 
 
-    delete accounts[key];
+    delete accounts[currentUser];
 
 
     saveDatabase();
 
-    refreshAdminPanel();
+
+    currentUser = null;
 
 
     alert(
-        "Account deleted."
+        "Your account has been deleted."
     );
+
+
+    showLogin();
+
+}
+
+
+/* =========================================================
+   MOM: DELETE OWN ACCOUNT
+========================================================= */
+
+function deleteMomAccount() {
+
+    if (
+        currentUser !==
+        ADMIN_USERNAME.toLowerCase()
+    ) {
+
+        return;
+    }
+
+
+    const confirmed =
+        confirm(
+            "⚠️ DELETE MOM ACCOUNT?\n\n" +
+            "This will permanently delete " +
+            "the MOM account and its password.\n\n" +
+            "The next login using the admin " +
+            "username will create a fresh MOM " +
+            "account with a new password.\n\n" +
+            "Are you sure?"
+        );
+
+
+    if (!confirmed) {
+        return;
+    }
+
+
+    delete accounts[
+        ADMIN_USERNAME.toLowerCase()
+    ];
+
+
+    saveDatabase();
+
+
+    currentUser = null;
+
+
+    alert(
+        "MOM account deleted.\n\n" +
+        "A new MOM password can now be created."
+    );
+
+
+    showLogin();
 
 }
 
@@ -1243,6 +1151,22 @@ document
     );
 
 
+document
+    .getElementById("deleteOwnAccountButton")
+    .addEventListener(
+        "click",
+        deleteOwnAccount
+    );
+
+
+document
+    .getElementById("deleteMomButton")
+    .addEventListener(
+        "click",
+        deleteMomAccount
+    );
+
+
 /* =========================================================
    ENTER KEY LOGIN
 ========================================================= */
@@ -1252,8 +1176,7 @@ loginPassword.addEventListener(
     function(event) {
 
         if (
-            event.key ===
-            "Enter"
+            event.key === "Enter"
         ) {
 
             login();
