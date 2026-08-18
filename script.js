@@ -1,110 +1,72 @@
 /* =========================================================
-   MONEY SYSTEM — SUPABASE VERSION
+   MONEY SYSTEM
+   script.js
+
+   SUPABASE VERSION
 ========================================================= */
 
 
 /* =========================================================
-   SUPABASE SETTINGS
+   SUPABASE CONFIGURATION
 ========================================================= */
 
 const SUPABASE_URL =
     "https://gzkzwwohdugkqxrtewxm.supabase.co";
 
-const SUPABASE_KEY =
+
+const SUPABASE_PUBLISHABLE_KEY =
     "sb_publishable_XD1DVwklzqQiYx3dmKxRCg_h6NL1pQ-";
+
+
+/*
+   The Supabase library is loaded by index.html
+   before this file.
+
+   This is the part that was missing before.
+*/
+
+if (
+    !window.supabase ||
+    typeof window.supabase.createClient !== "function"
+) {
+
+    alert(
+        "Supabase failed to load. Please refresh the page."
+    );
+
+    throw new Error(
+        "Supabase JavaScript library was not loaded."
+    );
+
+}
+
+
+const supabase =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_PUBLISHABLE_KEY
+    );
+
+
+/* =========================================================
+   SETTINGS
+========================================================= */
 
 const ADMIN_USERNAME = "mom";
 
-let supabase = null;
+
+/*
+   The database table we created.
+*/
+
+const TABLE_NAME = "accounts";
+
+
+/* =========================================================
+   CURRENT USER
+========================================================= */
+
 let currentUser = null;
-let currentAccount = null;
-
-
-/* =========================================================
-   LOAD SUPABASE
-========================================================= */
-
-function loadSupabase() {
-
-    return new Promise((resolve, reject) => {
-
-        if (window.supabase) {
-            resolve();
-            return;
-        }
-
-        const script =
-            document.createElement("script");
-
-        script.src =
-            "https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2";
-
-        script.onload = resolve;
-
-        script.onerror = function () {
-            reject(
-                new Error(
-                    "Could not load Supabase."
-                )
-            );
-        };
-
-        document.head.appendChild(script);
-
-    });
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-async function initializeSupabase() {
-
-    try {
-
-        await loadSupabase();
-
-        supabase =
-            window.supabase.createClient(
-                SUPABASE_URL,
-                SUPABASE_KEY
-            );
-
-        console.log(
-            "Supabase connected."
-        );
-
-        const {
-            data
-        } =
-            await supabase.auth.getSession();
-
-        if (
-            data &&
-            data.session &&
-            data.session.user
-        ) {
-
-            currentUser =
-                data.session.user;
-
-            await loadCurrentAccount();
-
-        }
-
-    } catch (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not connect to the money system."
-        );
-
-    }
-
-}
 
 
 /* =========================================================
@@ -116,15 +78,18 @@ const loginScreen =
         "loginScreen"
     );
 
+
 const createScreen =
     document.getElementById(
         "createScreen"
     );
 
+
 const userScreen =
     document.getElementById(
         "userScreen"
     );
+
 
 const adminScreen =
     document.getElementById(
@@ -132,10 +97,23 @@ const adminScreen =
     );
 
 
+const loading =
+    document.getElementById(
+        "loading"
+    );
+
+
+const loadingText =
+    document.getElementById(
+        "loadingText"
+    );
+
+
 const loginUsername =
     document.getElementById(
         "loginUsername"
     );
+
 
 const loginPassword =
     document.getElementById(
@@ -148,6 +126,7 @@ const newUsername =
         "newUsername"
     );
 
+
 const newPassword =
     document.getElementById(
         "newPassword"
@@ -159,15 +138,140 @@ const loginMessage =
         "loginMessage"
     );
 
+
 const createMessage =
     document.getElementById(
         "createMessage"
     );
 
+
 const userMessage =
     document.getElementById(
         "userMessage"
     );
+
+
+/* =========================================================
+   LOADING
+========================================================= */
+
+function showLoading(text = "Loading...") {
+
+    loadingText.textContent = text;
+
+    loading.classList.remove(
+        "hidden"
+    );
+
+}
+
+
+function hideLoading() {
+
+    loading.classList.add(
+        "hidden"
+    );
+
+}
+
+
+/* =========================================================
+   MONEY
+========================================================= */
+
+function moneyToCents(amount) {
+
+    return Math.round(
+        Number(amount) * 100
+    );
+
+}
+
+
+function centsToMoney(cents) {
+
+    return Number(cents) / 100;
+
+}
+
+
+function cleanMoney(amount) {
+
+    return centsToMoney(
+        moneyToCents(amount)
+    );
+
+}
+
+
+function formatMoney(amount) {
+
+    return (
+        "€" +
+        cleanMoney(amount)
+            .toFixed(2)
+    );
+
+}
+
+
+/* =========================================================
+   USERNAME
+========================================================= */
+
+function normalizeUsername(username) {
+
+    return username
+        .trim()
+        .toLowerCase();
+
+}
+
+
+/* =========================================================
+   MESSAGE HELPERS
+========================================================= */
+
+function setMessage(
+    element,
+    text,
+    error = false
+) {
+
+    element.className =
+        "message";
+
+
+    if (error) {
+
+        element.classList.add(
+            "error"
+        );
+
+    } else {
+
+        element.classList.add(
+            "success"
+        );
+
+    }
+
+
+    element.textContent =
+        text;
+
+}
+
+
+function clearMessage(element) {
+
+    element.className =
+        "message";
+
+    element.textContent =
+        "";
+
+}
 
 
 /* =========================================================
@@ -214,56 +318,151 @@ function showCreateAccount() {
         "hidden"
     );
 
-}
-
-
-/* =========================================================
-   USERNAME → INTERNAL AUTH EMAIL
-========================================================= */
-
-function usernameToEmail(username) {
-
-    return (
-        username
-            .trim()
-            .toLowerCase()
-            .replace(/[^a-z0-9._-]/g, "-")
-            +
-        "@money-system.local"
+    clearMessage(
+        createMessage
     );
 
 }
 
 
 /* =========================================================
-   MONEY HELPERS
+   DATABASE ERROR
 ========================================================= */
 
-function moneyToCents(amount) {
+function databaseErrorMessage(error) {
 
-    return Math.round(
-        Number(amount) * 100
+    console.error(
+        "Supabase error:",
+        error
+    );
+
+
+    if (!error) {
+
+        return "Unknown database error.";
+
+    }
+
+
+    if (
+        error.message &&
+        error.message.includes(
+            "Failed to fetch"
+        )
+    ) {
+
+        return (
+            "Could not connect to Supabase."
+        );
+
+    }
+
+
+    if (
+        error.message &&
+        error.message.includes(
+            "row-level security"
+        )
+    ) {
+
+        return (
+            "Supabase blocked this action with Row Level Security."
+        );
+
+    }
+
+
+    if (
+        error.message &&
+        error.message.includes(
+            "permission denied"
+        )
+    ) {
+
+        return (
+            "Supabase denied database access."
+        );
+
+    }
+
+
+    return (
+        error.message ||
+        "Database request failed."
     );
 
 }
 
 
-function centsToMoney(cents) {
+/* =========================================================
+   DATABASE: FIND ACCOUNT
+========================================================= */
 
-    return (
-        Math.round(cents) / 100
-    );
+async function findAccount(username) {
+
+    const key =
+        normalizeUsername(username);
+
+
+    const {
+        data,
+        error
+    } =
+        await supabase
+            .from(TABLE_NAME)
+            .select(
+                "*"
+            )
+            .eq(
+                "username",
+                key
+            )
+            .maybeSingle();
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    return data;
 
 }
 
 
-function formatMoney(amount) {
+/* =========================================================
+   DATABASE: GET ALL ACCOUNTS
+========================================================= */
 
-    return (
-        "€" +
-        Number(amount || 0)
-            .toFixed(2)
-    );
+async function getAllAccounts() {
+
+    const {
+        data,
+        error
+    } =
+        await supabase
+            .from(TABLE_NAME)
+            .select(
+                "*"
+            )
+            .order(
+                "id",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (error) {
+
+        throw error;
+
+    }
+
+
+    return data || [];
 
 }
 
@@ -277,106 +476,116 @@ async function createAccount() {
     const username =
         newUsername.value.trim();
 
+
     const password =
         newPassword.value;
 
 
-    createMessage.className =
-        "message";
-
-    createMessage.textContent =
-        "";
+    clearMessage(
+        createMessage
+    );
 
 
     if (!username || !password) {
 
-        createMessage.classList.add(
-            "error"
+        setMessage(
+            createMessage,
+            "Enter a username and password.",
+            true
         );
 
-        createMessage.textContent =
-            "Enter a username and password.";
-
         return;
+
     }
 
 
-    if (username.length < 2) {
+    if (
+        username.length < 2
+    ) {
 
-        createMessage.classList.add(
-            "error"
+        setMessage(
+            createMessage,
+            "Username must be at least 2 characters.",
+            true
         );
 
-        createMessage.textContent =
-            "Username must be at least 2 characters.";
-
         return;
+
     }
 
 
-    if (password.length < 6) {
+    if (
+        username.length > 30
+    ) {
 
-        createMessage.classList.add(
-            "error"
+        setMessage(
+            createMessage,
+            "Username is too long.",
+            true
         );
 
-        createMessage.textContent =
-            "Password must be at least 6 characters.";
-
         return;
+
     }
 
 
-    /*
-       "mom" is handled specially.
+    if (
+        password.length < 4
+    ) {
 
-       Only the first MOM account can become
-       the administrator.
-    */
+        setMessage(
+            createMessage,
+            "Password must be at least 4 characters.",
+            true
+        );
 
-    const email =
-        usernameToEmail(username);
+        return;
+
+    }
+
+
+    const key =
+        normalizeUsername(
+            username
+        );
+
+
+    if (
+        key ===
+        ADMIN_USERNAME
+    ) {
+
+        setMessage(
+            createMessage,
+            "That username is reserved.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Creating account..."
+    );
 
 
     try {
 
-        /*
-           Check whether this username already
-           exists in the database.
-        */
-
-        const {
-            data: existingAccount,
-            error: existingError
-        } =
-            await supabase
-                .from("accounts")
-                .select("id, username")
-                .ilike(
-                    "username",
-                    username
-                )
-                .limit(1);
-
-
-        if (existingError) {
-
-            throw existingError;
-
-        }
-
-
-        if (
-            existingAccount &&
-            existingAccount.length > 0
-        ) {
-
-            createMessage.classList.add(
-                "error"
+        const existing =
+            await findAccount(
+                key
             );
 
-            createMessage.textContent =
-                "That username already exists.";
+
+        if (existing) {
+
+            setMessage(
+                createMessage,
+                "That username already exists.",
+                true
+            );
 
             return;
 
@@ -384,23 +593,31 @@ async function createAccount() {
 
 
         /*
-           Create the actual Supabase Auth user.
+           This version expects the accounts table
+           to have a password column.
 
-           The password is handled by Supabase,
-           NOT stored in our accounts table.
+           That matches the table you originally
+           created in the Supabase Table Editor.
         */
 
         const {
-            data,
             error
         } =
-            await supabase.auth.signUp({
+            await supabase
+                .from(TABLE_NAME)
+                .insert({
 
-                email: email,
+                    username: key,
 
-                password: password
+                    password: password,
 
-            });
+                    balance: 0,
+
+                    saved: 0,
+
+                    is_admin: false
+
+                });
 
 
         if (error) {
@@ -410,109 +627,43 @@ async function createAccount() {
         }
 
 
-        if (
-            !data ||
-            !data.user
-        ) {
+        newUsername.value =
+            "";
 
-            throw new Error(
-                "Account could not be created."
-            );
-
-        }
+        newPassword.value =
+            "";
 
 
-        currentUser =
-            data.user;
-
-
-        /*
-           Create the public account profile.
-
-           The SQL function decides whether
-           "mom" becomes the admin.
-        */
-
-        const {
-            data: profile,
-            error: profileError
-        } =
-            await supabase.rpc(
-                "create_account_profile",
-                {
-                    p_username:
-                        username
-                }
-            );
-
-
-        if (profileError) {
-
-            /*
-               If profile creation failed,
-               sign the Auth user out.
-            */
-
-            await supabase.auth.signOut();
-
-            throw profileError;
-
-        }
-
-
-        currentAccount =
-            profile;
-
-
-        newUsername.value = "";
-
-        newPassword.value = "";
-
-
-        createMessage.classList.add(
-            "success"
+        setMessage(
+            createMessage,
+            "Account created successfully!"
         );
 
-        createMessage.textContent =
-            "Account created successfully!";
 
+        setTimeout(
+            function() {
 
-        /*
-           If this was MOM, show MOM panel.
-           Otherwise show normal account.
-        */
+                showLogin();
 
-        if (
-            profile &&
-            profile.is_admin === true
-        ) {
-
-            setTimeout(
-                showAdminPanel,
-                500
-            );
-
-        } else {
-
-            setTimeout(
-                showUserPanel,
-                500
-            );
-
-        }
-
-
-    } catch (error) {
-
-        console.error(error);
-
-        createMessage.classList.add(
-            "error"
+            },
+            900
         );
 
-        createMessage.textContent =
-            error.message ||
-            "Could not create account.";
+    }
+
+    catch (error) {
+
+        setMessage(
+            createMessage,
+            databaseErrorMessage(error),
+            true
+        );
+
+    }
+
+    finally {
+
+        hideLoading();
 
     }
 
@@ -528,94 +679,87 @@ async function login() {
     const username =
         loginUsername.value.trim();
 
+
     const password =
         loginPassword.value;
 
 
-    loginMessage.className =
-        "message";
-
-    loginMessage.textContent =
-        "";
+    clearMessage(
+        loginMessage
+    );
 
 
     if (!username || !password) {
 
-        loginMessage.classList.add(
-            "error"
+        setMessage(
+            loginMessage,
+            "Enter your username and password.",
+            true
         );
 
-        loginMessage.textContent =
-            "Enter your username and password.";
-
         return;
+
     }
+
+
+    showLoading(
+        "Logging in..."
+    );
 
 
     try {
 
-        const email =
-            usernameToEmail(username);
+        const account =
+            await findAccount(
+                username
+            );
 
 
-        const {
-            data,
-            error
-        } =
-            await supabase.auth.signInWithPassword({
+        if (!account) {
 
-                email: email,
+            setMessage(
+                loginMessage,
+                "Account does not exist.",
+                true
+            );
 
-                password: password
-
-            });
-
-
-        if (error) {
-
-            throw error;
+            return;
 
         }
 
 
         if (
-            !data ||
-            !data.user
+            String(account.password) !==
+            String(password)
         ) {
 
-            throw new Error(
-                "Login failed."
+            setMessage(
+                loginMessage,
+                "Incorrect password.",
+                true
             );
+
+            return;
 
         }
 
 
         currentUser =
-            data.user;
+            account;
 
 
-        const success =
-            await loadCurrentAccount();
+        loginUsername.value =
+            "";
 
-
-        if (!success) {
-
-            await supabase.auth.signOut();
-
-            currentUser = null;
-
-            throw new Error(
-                "No money-system account was found for this login."
-            );
-
-        }
+        loginPassword.value =
+            "";
 
 
         if (
-            currentAccount.is_admin === true
+            account.is_admin === true
         ) {
 
-            showAdminPanel();
+            await showAdminPanel();
 
         } else {
 
@@ -623,17 +767,21 @@ async function login() {
 
         }
 
+    }
 
-    } catch (error) {
+    catch (error) {
 
-        console.error(error);
-
-        loginMessage.classList.add(
-            "error"
+        setMessage(
+            loginMessage,
+            databaseErrorMessage(error),
+            true
         );
 
-        loginMessage.textContent =
-            "Incorrect username or password.";
+    }
+
+    finally {
+
+        hideLoading();
 
     }
 
@@ -641,59 +789,7 @@ async function login() {
 
 
 /* =========================================================
-   LOAD CURRENT ACCOUNT
-========================================================= */
-
-async function loadCurrentAccount() {
-
-    if (!currentUser) {
-
-        return false;
-
-    }
-
-
-    const {
-        data,
-        error
-    } =
-        await supabase
-            .from("accounts")
-            .select("*")
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .maybeSingle();
-
-
-    if (error) {
-
-        console.error(error);
-
-        return false;
-
-    }
-
-
-    if (!data) {
-
-        return false;
-
-    }
-
-
-    currentAccount =
-        data;
-
-
-    return true;
-
-}
-
-
-/* =========================================================
-   NORMAL USER PANEL
+   USER PANEL
 ========================================================= */
 
 function showUserPanel() {
@@ -709,9 +805,13 @@ function showUserPanel() {
 }
 
 
+/* =========================================================
+   USER DISPLAY
+========================================================= */
+
 function updateUserDisplay() {
 
-    if (!currentAccount) {
+    if (!currentUser) {
 
         return;
 
@@ -722,7 +822,7 @@ function updateUserDisplay() {
         "welcomeText"
     ).textContent =
         "Welcome, " +
-        currentAccount.username +
+        currentUser.username +
         "!";
 
 
@@ -730,7 +830,7 @@ function updateUserDisplay() {
         "balanceValue"
     ).textContent =
         formatMoney(
-            currentAccount.balance
+            currentUser.balance
         );
 
 
@@ -738,8 +838,51 @@ function updateUserDisplay() {
         "savedValue"
     ).textContent =
         formatMoney(
-            currentAccount.saved
+            currentUser.saved
         );
+
+}
+
+
+/* =========================================================
+   RELOAD CURRENT USER
+========================================================= */
+
+async function reloadCurrentUser() {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
+    const fresh =
+        await findAccount(
+            currentUser.username
+        );
+
+
+    if (!fresh) {
+
+        currentUser = null;
+
+        showLogin();
+
+        alert(
+            "Your account no longer exists."
+        );
+
+        return;
+
+    }
+
+
+    currentUser =
+        fresh;
+
+
+    updateUserDisplay();
 
 }
 
@@ -750,9 +893,16 @@ function updateUserDisplay() {
 
 async function buyMoney() {
 
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
     const input =
         prompt(
-            "How much do you want to buy?"
+            "How much do you want to spend?"
         );
 
 
@@ -764,15 +914,36 @@ async function buyMoney() {
 
 
     const amount =
-        Number(input);
-
-
-    const amountCents =
-        moneyToCents(amount);
+        Number(
+            input.replace(
+                ",",
+                "."
+            )
+        );
 
 
     if (
         !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        showUserMessage(
+            "Enter a valid amount.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    const amountCents =
+        moneyToCents(
+            amount
+        );
+
+
+    if (
         amountCents <= 0
     ) {
 
@@ -788,7 +959,7 @@ async function buyMoney() {
 
     const balanceCents =
         moneyToCents(
-            currentAccount.balance
+            currentUser.balance
         );
 
 
@@ -814,48 +985,64 @@ async function buyMoney() {
         );
 
 
-    const {
-        data,
-        error
-    } =
-        await supabase
-            .from("accounts")
-            .update({
-                balance:
-                    newBalance
-            })
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .select()
-            .single();
+    showLoading(
+        "Processing purchase..."
+    );
 
 
-    if (error) {
+    try {
 
-        console.error(error);
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .update({
+
+                    balance:
+                        newBalance
+
+                })
+                .eq(
+                    "id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        currentUser.balance =
+            newBalance;
+
+
+        updateUserDisplay();
+
 
         showUserMessage(
-            "Could not update balance.",
-            true
+            "Purchase successful!"
         );
-
-        return;
 
     }
 
+    catch (error) {
 
-    currentAccount =
-        data;
+        showUserMessage(
+            databaseErrorMessage(error),
+            true
+        );
 
+    }
 
-    updateUserDisplay();
+    finally {
 
+        hideLoading();
 
-    showUserMessage(
-        "Purchase successful!"
-    );
+    }
 
 }
 
@@ -865,6 +1052,13 @@ async function buyMoney() {
 ========================================================= */
 
 async function saveMoney() {
+
+    if (!currentUser) {
+
+        return;
+
+    }
+
 
     const input =
         prompt(
@@ -880,16 +1074,17 @@ async function saveMoney() {
 
 
     const amount =
-        Number(input);
-
-
-    const amountCents =
-        moneyToCents(amount);
+        Number(
+            input.replace(
+                ",",
+                "."
+            )
+        );
 
 
     if (
         !Number.isFinite(amount) ||
-        amountCents <= 0
+        amount <= 0
     ) {
 
         showUserMessage(
@@ -902,25 +1097,23 @@ async function saveMoney() {
     }
 
 
+    const amountCents =
+        moneyToCents(
+            amount
+        );
+
+
     const balanceCents =
         moneyToCents(
-            currentAccount.balance
+            currentUser.balance
         );
 
 
     const savedCents =
         moneyToCents(
-            currentAccount.saved
+            currentUser.saved
         );
 
-
-    /*
-       EVERYTHING is calculated in cents.
-
-       So €0.03 = 3 cents.
-
-       This fixes the old €0.03 bug.
-    */
 
     if (
         amountCents >
@@ -951,53 +1144,71 @@ async function saveMoney() {
         );
 
 
-    const {
-        data,
-        error
-    } =
-        await supabase
-            .from("accounts")
-            .update({
-
-                balance:
-                    newBalance,
-
-                saved:
-                    newSaved
-
-            })
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .select()
-            .single();
+    showLoading(
+        "Saving money..."
+    );
 
 
-    if (error) {
+    try {
 
-        console.error(error);
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .update({
+
+                    balance:
+                        newBalance,
+
+                    saved:
+                        newSaved
+
+                })
+                .eq(
+                    "id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        currentUser.balance =
+            newBalance;
+
+
+        currentUser.saved =
+            newSaved;
+
+
+        updateUserDisplay();
+
 
         showUserMessage(
-            "Could not save money.",
-            true
+            "Money saved!"
         );
-
-        return;
 
     }
 
+    catch (error) {
 
-    currentAccount =
-        data;
+        showUserMessage(
+            databaseErrorMessage(error),
+            true
+        );
 
+    }
 
-    updateUserDisplay();
+    finally {
 
+        hideLoading();
 
-    showUserMessage(
-        "Money saved!"
-    );
+    }
 
 }
 
@@ -1008,9 +1219,16 @@ async function saveMoney() {
 
 async function withdrawMoney() {
 
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
     const input =
         prompt(
-            "How much do you want to withdraw?"
+            "How much do you want to withdraw from Saved?"
         );
 
 
@@ -1022,16 +1240,17 @@ async function withdrawMoney() {
 
 
     const amount =
-        Number(input);
-
-
-    const amountCents =
-        moneyToCents(amount);
+        Number(
+            input.replace(
+                ",",
+                "."
+            )
+        );
 
 
     if (
         !Number.isFinite(amount) ||
-        amountCents <= 0
+        amount <= 0
     ) {
 
         showUserMessage(
@@ -1044,15 +1263,15 @@ async function withdrawMoney() {
     }
 
 
-    const savedCents =
+    const amountCents =
         moneyToCents(
-            currentAccount.saved
+            amount
         );
 
 
-    const balanceCents =
+    const savedCents =
         moneyToCents(
-            currentAccount.balance
+            currentUser.saved
         );
 
 
@@ -1071,6 +1290,12 @@ async function withdrawMoney() {
     }
 
 
+    const balanceCents =
+        moneyToCents(
+            currentUser.balance
+        );
+
+
     const newSaved =
         centsToMoney(
             savedCents -
@@ -1085,53 +1310,71 @@ async function withdrawMoney() {
         );
 
 
-    const {
-        data,
-        error
-    } =
-        await supabase
-            .from("accounts")
-            .update({
-
-                balance:
-                    newBalance,
-
-                saved:
-                    newSaved
-
-            })
-            .eq(
-                "user_id",
-                currentUser.id
-            )
-            .select()
-            .single();
+    showLoading(
+        "Withdrawing money..."
+    );
 
 
-    if (error) {
+    try {
 
-        console.error(error);
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .update({
+
+                    balance:
+                        newBalance,
+
+                    saved:
+                        newSaved
+
+                })
+                .eq(
+                    "id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        currentUser.balance =
+            newBalance;
+
+
+        currentUser.saved =
+            newSaved;
+
+
+        updateUserDisplay();
+
 
         showUserMessage(
-            "Could not withdraw money.",
-            true
+            "Money withdrawn!"
         );
-
-        return;
 
     }
 
+    catch (error) {
 
-    currentAccount =
-        data;
+        showUserMessage(
+            databaseErrorMessage(error),
+            true
+        );
 
+    }
 
-    updateUserDisplay();
+    finally {
 
+        hideLoading();
 
-    showUserMessage(
-        "Money withdrawn!"
-    );
+    }
 
 }
 
@@ -1145,34 +1388,26 @@ function showUserMessage(
     error = false
 ) {
 
-    userMessage.className =
-        "message";
-
-
-    if (error) {
-
-        userMessage.classList.add(
-            "error"
-        );
-
-    } else {
-
-        userMessage.classList.add(
-            "success"
-        );
-
-    }
-
-
-    userMessage.textContent =
-        text;
+    setMessage(
+        userMessage,
+        text,
+        error
+    );
 
 
     setTimeout(
-        function () {
+        function() {
 
-            userMessage.textContent =
-                "";
+            if (
+                userMessage.textContent ===
+                text
+            ) {
+
+                clearMessage(
+                    userMessage
+                );
+
+            }
 
         },
         2500
@@ -1193,13 +1428,14 @@ async function showAdminPanel() {
         "hidden"
     );
 
+
     await refreshAdminPanel();
 
 }
 
 
 /* =========================================================
-   REFRESH MOM ACCOUNT LIST
+   REFRESH MOM PANEL
 ========================================================= */
 
 async function refreshAdminPanel() {
@@ -1211,61 +1447,37 @@ async function refreshAdminPanel() {
 
 
     list.innerHTML =
-        "Loading accounts...";
+        "<p>Loading accounts...</p>";
 
 
-    const {
-        data,
-        error
-    } =
-        await supabase.rpc(
-            "mom_get_accounts"
-        );
+    try {
 
+        const accounts =
+            await getAllAccounts();
 
-    if (error) {
-
-        console.error(error);
 
         list.innerHTML =
-            "<p>Could not load accounts.</p>";
-
-        return;
-
-    }
+            "";
 
 
-    list.innerHTML = "";
+        let normalAccounts = 0;
 
 
-    /*
-       Show normal accounts only.
+        for (
+            const account of accounts
+        ) {
 
-       MOM does NOT get a delete button
-       for other people's accounts.
-    */
+            if (
+                account.is_admin === true
+            ) {
 
-    const normalAccounts =
-        (data || []).filter(
-            account =>
-                account.is_admin !== true
-        );
+                continue;
 
-
-    if (
-        normalAccounts.length === 0
-    ) {
-
-        list.innerHTML =
-            "<p>No normal accounts yet.</p>";
-
-        return;
-
-    }
+            }
 
 
-    normalAccounts.forEach(
-        function (account) {
+            normalAccounts++;
+
 
             const div =
                 document.createElement(
@@ -1336,11 +1548,17 @@ async function refreshAdminPanel() {
                 );
 
 
-            info.appendChild(name);
+            info.appendChild(
+                name
+            );
 
-            info.appendChild(balance);
+            info.appendChild(
+                balance
+            );
 
-            info.appendChild(saved);
+            info.appendChild(
+                saved
+            );
 
 
             const buttons =
@@ -1369,10 +1587,36 @@ async function refreshAdminPanel() {
 
             increaseButton.addEventListener(
                 "click",
-                function () {
+                function() {
 
                     increaseBalance(
-                        account.user_id
+                        account
+                    );
+
+                }
+            );
+
+
+            const deleteButton =
+                document.createElement(
+                    "button"
+                );
+
+
+            deleteButton.className =
+                "delete";
+
+
+            deleteButton.textContent =
+                "🗑️ Delete account";
+
+
+            deleteButton.addEventListener(
+                "click",
+                function() {
+
+                    deleteAccount(
+                        account
                     );
 
                 }
@@ -1384,15 +1628,66 @@ async function refreshAdminPanel() {
             );
 
 
-            div.appendChild(info);
+            buttons.appendChild(
+                deleteButton
+            );
 
-            div.appendChild(buttons);
+
+            div.appendChild(
+                info
+            );
 
 
-            list.appendChild(div);
+            div.appendChild(
+                buttons
+            );
+
+
+            list.appendChild(
+                div
+            );
 
         }
-    );
+
+
+        if (
+            normalAccounts === 0
+        ) {
+
+            list.innerHTML =
+                "<p>No normal accounts yet.</p>";
+
+        }
+
+    }
+
+    catch (error) {
+
+        list.innerHTML =
+            "";
+
+
+        const message =
+            document.createElement(
+                "p"
+            );
+
+
+        message.className =
+            "error";
+
+
+        message.textContent =
+            databaseErrorMessage(
+                error
+            );
+
+
+        list.appendChild(
+            message
+        );
+
+    }
 
 }
 
@@ -1402,12 +1697,21 @@ async function refreshAdminPanel() {
 ========================================================= */
 
 async function increaseBalance(
-    userId
+    account
 ) {
+
+    if (!account) {
+
+        return;
+
+    }
+
 
     const input =
         prompt(
-            "How much do you want to add?"
+            "Add money to " +
+            account.username +
+            "'s balance:"
         );
 
 
@@ -1419,16 +1723,17 @@ async function increaseBalance(
 
 
     const amount =
-        Number(input);
-
-
-    const amountCents =
-        moneyToCents(amount);
+        Number(
+            input.replace(
+                ",",
+                "."
+            )
+        );
 
 
     if (
         !Number.isFinite(amount) ||
-        amountCents <= 0
+        amount <= 0
     ) {
 
         alert(
@@ -1440,30 +1745,111 @@ async function increaseBalance(
     }
 
 
-    const {
-        data,
-        error
-    } =
-        await supabase.rpc(
-            "mom_increase_balance",
-            {
-                p_user_id:
-                    userId,
-
-                p_amount:
-                    centsToMoney(
-                        amountCents
-                    )
-            }
+    const amountCents =
+        moneyToCents(
+            amount
         );
 
 
-    if (error) {
+    const balanceCents =
+        moneyToCents(
+            account.balance
+        );
 
-        console.error(error);
+
+    const newBalance =
+        centsToMoney(
+            balanceCents +
+            amountCents
+        );
+
+
+    showLoading(
+        "Adding money..."
+    );
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .update({
+
+                    balance:
+                        newBalance
+
+                })
+                .eq(
+                    "id",
+                    account.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        await refreshAdminPanel();
+
 
         alert(
-            "Could not increase balance."
+            "Added " +
+            formatMoney(
+                amount
+            ) +
+            " to " +
+            account.username +
+            "'s balance."
+        );
+
+    }
+
+    catch (error) {
+
+        alert(
+            databaseErrorMessage(
+                error
+            )
+        );
+
+    }
+
+    finally {
+
+        hideLoading();
+
+    }
+
+}
+
+
+/* =========================================================
+   MOM: DELETE ACCOUNT
+========================================================= */
+
+async function deleteAccount(
+    account
+) {
+
+    if (!account) {
+
+        return;
+
+    }
+
+
+    if (
+        account.is_admin === true
+    ) {
+
+        alert(
+            "The MOM account cannot be deleted here."
         );
 
         return;
@@ -1471,24 +1857,78 @@ async function increaseBalance(
     }
 
 
-    await refreshAdminPanel();
+    const confirmed =
+        confirm(
+            "Delete the account '" +
+            account.username +
+            "'?\n\n" +
+            "This permanently removes its Balance and Saved money."
+        );
 
 
-    alert(
-        "Added " +
-        formatMoney(
-            centsToMoney(
-                amountCents
-            )
-        ) +
-        " successfully."
+    if (!confirmed) {
+
+        return;
+
+    }
+
+
+    showLoading(
+        "Deleting account..."
     );
+
+
+    try {
+
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .delete()
+                .eq(
+                    "id",
+                    account.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        await refreshAdminPanel();
+
+
+        alert(
+            "Account deleted."
+        );
+
+    }
+
+    catch (error) {
+
+        alert(
+            databaseErrorMessage(
+                error
+            )
+        );
+
+    }
+
+    finally {
+
+        hideLoading();
+
+    }
 
 }
 
 
 /* =========================================================
-   DELETE OWN NORMAL ACCOUNT
+   DELETE OWN ACCOUNT
 ========================================================= */
 
 async function deleteOwnAccount() {
@@ -1503,8 +1943,7 @@ async function deleteOwnAccount() {
     const confirmed =
         confirm(
             "Delete your account?\n\n" +
-            "Your Balance and Saved money " +
-            "will be permanently removed."
+            "This permanently removes your Balance and Saved money."
         );
 
 
@@ -1515,53 +1954,74 @@ async function deleteOwnAccount() {
     }
 
 
-    /*
-       Delete the public account first.
-
-       The Auth user itself needs a server-side
-       deletion mechanism. We deliberately do
-       NOT put a service_role key in this browser.
-    */
-
-    const {
-        error
-    } =
-        await supabase
-            .from("accounts")
-            .delete()
-            .eq(
-                "user_id",
-                currentUser.id
-            );
-
-
-    if (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not delete the account."
+    const secondConfirmation =
+        confirm(
+            "ARE YOU SURE?\n\n" +
+            "This cannot be undone."
         );
+
+
+    if (!secondConfirmation) {
 
         return;
 
     }
 
 
-    await supabase.auth.signOut();
-
-
-    currentUser = null;
-
-    currentAccount = null;
-
-
-    alert(
-        "Your money-system account was deleted."
+    showLoading(
+        "Deleting account..."
     );
 
 
-    showLogin();
+    try {
+
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .delete()
+                .eq(
+                    "id",
+                    currentUser.id
+                );
+
+
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        currentUser =
+            null;
+
+
+        hideLoading();
+
+
+        alert(
+            "Your account has been deleted."
+        );
+
+
+        showLogin();
+
+    }
+
+    catch (error) {
+
+        hideLoading();
+
+
+        alert(
+            databaseErrorMessage(
+                error
+            )
+        );
+
+    }
 
 }
 
@@ -1572,10 +2032,15 @@ async function deleteOwnAccount() {
 
 async function deleteMomAccount() {
 
+    if (!currentUser) {
+
+        return;
+
+    }
+
+
     if (
-        !currentUser ||
-        !currentAccount ||
-        currentAccount.is_admin !== true
+        currentUser.is_admin !== true
     ) {
 
         return;
@@ -1585,9 +2050,8 @@ async function deleteMomAccount() {
 
     const confirmed =
         confirm(
-            "Delete the MOM account?\n\n" +
-            "This removes the MOM money-system " +
-            "profile."
+            "DELETE THE MOM ACCOUNT?\n\n" +
+            "This will permanently remove the admin account."
         );
 
 
@@ -1598,48 +2062,108 @@ async function deleteMomAccount() {
     }
 
 
-    /*
-       Delete MOM's public profile.
-
-       We do NOT use a service_role key in
-       the browser to delete auth.users.
-    */
-
-    const {
-        error
-    } =
-        await supabase
-            .from("accounts")
-            .delete()
-            .eq(
-                "user_id",
-                currentUser.id
-            );
-
-
-    if (error) {
-
-        console.error(error);
-
-        alert(
-            "Could not delete the MOM account."
+    const secondConfirmation =
+        confirm(
+            "FINAL WARNING.\n\n" +
+            "Delete MOM permanently?"
         );
+
+
+    if (!secondConfirmation) {
 
         return;
 
     }
 
 
-    await supabase.auth.signOut();
+    showLoading(
+        "Deleting MOM account..."
+    );
 
 
-    currentUser = null;
+    try {
 
-    currentAccount = null;
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .delete()
+                .eq(
+                    "id",
+                    currentUser.id
+                );
 
 
-    alert(
-        "MOM account profile deleted."
+        if (error) {
+
+            throw error;
+
+        }
+
+
+        currentUser =
+            null;
+
+
+        hideLoading();
+
+
+        alert(
+            "MOM account deleted."
+        );
+
+
+        showLogin();
+
+    }
+
+    catch (error) {
+
+        hideLoading();
+
+
+        alert(
+            databaseErrorMessage(
+                error
+            )
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+    currentUser =
+        null;
+
+
+    loginUsername.value =
+        "";
+
+
+    loginPassword.value =
+        "";
+
+
+    clearMessage(
+        loginMessage
+    );
+
+
+    clearMessage(
+        createMessage
+    );
+
+
+    clearMessage(
+        userMessage
     );
 
 
@@ -1649,27 +2173,59 @@ async function deleteMomAccount() {
 
 
 /* =========================================================
-   LOGOUT
+   TEST SUPABASE CONNECTION
 ========================================================= */
 
-async function logout() {
+async function testSupabaseConnection() {
 
-    await supabase.auth.signOut();
+    try {
+
+        const {
+            error
+        } =
+            await supabase
+                .from(TABLE_NAME)
+                .select(
+                    "id",
+                    {
+                        count: "exact",
+                        head: true
+                    }
+                );
 
 
-    currentUser = null;
+        if (error) {
 
-    currentAccount = null;
+            console.error(
+                "Supabase connection/database test failed:",
+                error
+            );
+
+            return false;
+
+        }
 
 
-    loginUsername.value = "";
-
-    loginPassword.value = "";
-
-    loginMessage.textContent = "";
+        console.log(
+            "Supabase connection successful."
+        );
 
 
-    showLogin();
+        return true;
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "Supabase connection failed:",
+            error
+        );
+
+
+        return false;
+
+    }
 
 }
 
@@ -1789,12 +2345,12 @@ document
 
 
 /* =========================================================
-   ENTER KEY LOGIN
+   ENTER KEY
 ========================================================= */
 
 loginPassword.addEventListener(
     "keydown",
-    function (event) {
+    function(event) {
 
         if (
             event.key ===
@@ -1809,10 +2365,62 @@ loginPassword.addEventListener(
 );
 
 
+newPassword.addEventListener(
+    "keydown",
+    function(event) {
+
+        if (
+            event.key ===
+            "Enter"
+        ) {
+
+            createAccount();
+
+        }
+
+    }
+);
+
+
 /* =========================================================
    START
 ========================================================= */
 
-showLogin();
+async function startApp() {
 
-initializeSupabase();
+    showLogin();
+
+
+    showLoading(
+        "Connecting to Supabase..."
+    );
+
+
+    const connected =
+        await testSupabaseConnection();
+
+
+    hideLoading();
+
+
+    if (!connected) {
+
+        setMessage(
+            loginMessage,
+            "Could not connect to the money system.",
+            true
+        );
+
+        return;
+
+    }
+
+
+    console.log(
+        "💰 MONEY SYSTEM READY"
+    );
+
+}
+
+
+startApp();
