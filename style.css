@@ -36,7 +36,6 @@ h1 {
 
 h2 {
     font-size: 28px;
-
     margin-bottom: 20px;
 }
 
@@ -160,13 +159,11 @@ button:active {
 
 .moneyTitle {
     font-size: 20px;
-
     font-weight: bold;
 }
 
 .moneyValue {
     font-size: 32px;
-
     font-weight: bold;
 
     margin-top: 8px;
@@ -213,7 +210,6 @@ button:active {
 
 .account {
     background: white;
-
     color: #222;
 
     padding: 15px;
@@ -240,43 +236,54 @@ button:active {
 
 .accountInfo {
     text-align: left;
-
     flex: 1;
 }
 
 .accountName {
     font-size: 20px;
-
     font-weight: bold;
 }
 
 .accountMoney {
     margin-top: 5px;
-
     font-size: 15px;
 }
 
 
-/* ADMIN BUTTONS */
-
-.adminButtons {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    justify-content: center;
-}
+/* MOM INCREASE */
 
 .increase {
     background: #EF3026;
-
     color: white;
 }
 
-.delete {
-    background: #333333;
 
+/* DELETE OWN ACCOUNT */
+
+.deleteOwn {
+    position: fixed;
+
+    right: 20px;
+    bottom: 20px;
+
+    background: #333;
     color: white;
+
+    font-size: 13px;
+
+    padding: 10px 14px;
+
+    border-radius: 10px;
+}
+
+
+/* DELETE MOM ACCOUNT */
+
+.deleteMom {
+    background: #333;
+    color: white;
+
+    margin-top: 20px;
 }
 
 
@@ -284,7 +291,6 @@ button:active {
 
 .logout {
     background: white;
-
     color: #333;
 
     margin-top: 25px;
@@ -295,7 +301,6 @@ button:active {
 
 .message {
     min-height: 20px;
-
     font-weight: bold;
 }
 
@@ -325,9 +330,7 @@ button:active {
 
     .app {
         width: 100%;
-
         padding: 18px;
-
         margin-top: 20px;
     }
 
@@ -345,25 +348,21 @@ button:active {
 
     .moneyBox {
         width: 100%;
-
         max-width: 320px;
     }
 
     .actionButtons {
         flex-direction: column;
-
         align-items: center;
     }
 
     .actionButtons button {
         width: 90%;
-
         max-width: 300px;
     }
 
     .account {
         flex-direction: column;
-
         align-items: stretch;
     }
 
@@ -371,13 +370,12 @@ button:active {
         text-align: center;
     }
 
-    .adminButtons {
-        flex-direction: column;
+    .increase {
+        width: 100%;
     }
 
-    .adminButtons button {
-        width: 100%;
-
-        margin: 5px 0;
+    .deleteOwn {
+        position: static;
+        margin-top: 20px;
     }
 }
