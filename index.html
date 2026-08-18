@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Money System</title>
+
+<style>
+    * {
+        box-sizing: border-box;
+    }
+
+    body {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Arial, sans-serif;
+        background: #62B9E8;
+        color: #1111AA;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .app {
+        width: 95%;
+        max-width: 700px;
+        min-height: 500px;
+        text-align: center;
+        padding: 25px;
+    }
+
+    h1 {
+        font-size: 42px;
+        margin: 10px 0 30px;
+    }
+
+    h2 {
+        font-size: 30px;
+    }
+
+    input {
+        width: 90%;
+        max-width: 350px;
+        padding: 14px;
+        margin: 7px;
+        border: none;
+        border-radius: 10px;
+        font-size: 17px;
+    }
+
+    button {
+        border: none;
+        border-radius: 15px;
+        padding: 14px 25px;
+        margin: 8px;
+        font-size: 17px;
+        font-weight: bold;
+        cursor: pointer;
+    }
+
+    button:active {
+        transform: scale(0.96);
+    }
+
+    .login-button {
+        background: #1111AA;
+        color: white;
+    }
+
+    .create-button {
+        background: white;
+        color: #1111AA;
+    }
+
+    .money-container {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: wrap;
+        margin: 25px 0;
+    }
+
+    .money-box {
+        width: 230px;
+        padding: 20px;
+        border-radius: 20px;
+        border: 3px solid #222;
+    }
+
+    .balance {
+        background: #F2A64A;
+    }
+
+    .saved {
+        background: #4FA5DC;
+    }
+
+    .money-title {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .money-value {
+        font-size: 32px;
+        font-weight: bold;
+        margin-top: 8px;
+    }
+
+    .buy {
+        background: #EF3026;
+        color: white;
+    }
+
+    .save {
+        background: #63F53C;
+        color: black;
+    }
+
+    .withdraw {
+        background: #DDDDDD;
+        color: #8A50D8;
+    }
+
+    .logout {
+        background: white;
+        color: #333;
+        margin-top: 25px;
+    }
+
+    .admin-title {
+        color: #8A50D8;
+    }
+
+    .account {
+        background: white;
+        color: #222;
+        padding: 15px;
+        margin: 10px auto;
+        border-radius: 15px;
+        max-width: 550px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .account-info {
+        text-align: left;
+    }
+
+    .account-name {
+        font-size: 20px;
+        font-weight: bold;
+    }
+
+    .account-money {
+        font-size: 15px;
+        margin-top: 5px;
+    }
+
+    .increase {
+        background: #EF3026;
+        color: white;
+    }
+
+    .hidden {
+        display: none;
+    }
+
+    .error {
+        color: #B00000;
+        font-weight: bold;
+        margin: 10px;
+    }
+
+    .success {
+        color: #006600;
+        font-weight: bold;
+        margin: 10px;
+    }
+
+    .danger {
+        background: #444;
+        color: white;
+    }
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+    <!-- LOGIN -->
+    <div id="loginScreen">
+
+        <h1>💰 MONEY SYSTEM</h1>
+
+        <input
+            id="loginUsername"
+            type="text"
+            placeholder="Username"
+            autocomplete="username"
+        >
+
+        <br>
+
+        <input
+            id="loginPassword"
+            type="password"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+        <br>
+
+        <button class="login-button" onclick="login()">
+            🔐 LOG IN
+        </button>
+
+        <br>
+
+        <button class="create-button" onclick="showCreateAccount()">
+            Create account
+        </button>
+
+        <p id="loginMessage"></p>
+
+    </div>
+
+
+    <!-- CREATE ACCOUNT -->
+    <div id="createScreen" class="hidden">
+
+        <h1>CREATE ACCOUNT</h1>
+
+        <input
+            id="newUsername"
+            type="text"
+            placeholder="Choose a username"
+        >
+
+        <br>
+
+        <input
+            id="newPassword"
+            type="password"
+            placeholder="Choose a password"
+        >
+
+        <br>
+
+        <button class="login-button" onclick="createAccount()">
+            CREATE ACCOUNT
+        </button>
+
+        <br>
+
+        <button class="create-button" onclick="showLogin()">
+            Back
+        </button>
+
+        <p id="createMessage"></p>
+
+    </div>
+
+
+    <!-- NORMAL USER PANEL -->
+    <div id="userScreen" class="hidden">
+
+        <h1 id="welcomeText">Welcome!</h1>
+
+        <div class="money-container">
+
+            <div class="money-box balance">
+
+                <div class="money-title">
+                    💶 Balance
+                </div>
+
+                <div
+                    id="balanceValue"
+                    class="money-value"
+                >
+                    €0.00
+                </div>
+
+            </div>
+
+
+            <div class="money-box saved">
+
+                <div class="money-title">
+                    🏦 Saved
+                </div>
+
+                <div
+                    id="savedValue"
+                    class="money-value"
+                >
+                    €0.00
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <div>
+
+            <button class="buy" onclick="buyMoney()">
+                🔴 BUY
+            </button>
+
+            <button class="save" onclick="saveMoney()">
+                🟢 SAVE
+            </button>
+
+            <button class="withdraw" onclick="withdrawMoney()">
+                🟣 WITHDRAW
+            </button>
+
+        </div>
+
+        <p id="userMessage"></p>
+
+        <button class="logout" onclick="logout()">
+            Log out
+        </button>
+
+    </div>
+
+
+    <!-- MOM PANEL -->
+    <div id="adminScreen" class="hidden">
+
+        <h1 class="admin-title">
+            👑 MOM PANEL
+        </h1>
+
+        <h2>Account Overview</h2>
+
+        <div id="accountList"></div>
+
+        <button class="logout" onclick="logout()">
+            Log out
+        </button>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* =========================================================
+   STORAGE
+========================================================= */
+
+const STORAGE_KEY = "moneySystemAccounts";
+
+let accounts = JSON.parse(
+    localStorage.getItem(STORAGE_KEY)
+) || {};
+
+let currentUser = null;
+
+
+/* =========================================================
+   SAVE DATABASE
+========================================================= */
+
+function saveDatabase() {
+
+    localStorage.setItem(
+        STORAGE_KEY,
+        JSON.stringify(accounts)
+    );
+
+}
+
+
+/* =========================================================
+   SCREEN FUNCTIONS
+========================================================= */
+
+function hideAllScreens() {
+
+    document
+        .getElementById("loginScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("createScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("userScreen")
+        .classList.add("hidden");
+
+    document
+        .getElementById("adminScreen")
+        .classList.add("hidden");
+
+}
+
+
+function showLogin() {
+
+    hideAllScreens();
+
+    document
+        .getElementById("loginScreen")
+        .classList.remove("hidden");
+
+}
+
+
+function showCreateAccount() {
+
+    hideAllScreens();
+
+    document
+        .getElementById("createScreen")
+        .classList.remove("hidden");
+
+}
+
+
+/* =========================================================
+   CREATE ACCOUNT
+========================================================= */
+
+function createAccount() {
+
+    const username =
+        document
+            .getElementById("newUsername")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("newPassword")
+            .value;
+
+    const message =
+        document.getElementById("createMessage");
+
+
+    if (!username || !password) {
+
+        message.className = "error";
+
+        message.textContent =
+            "Enter a username and password.";
+
+        return;
+    }
+
+
+    const key = username.toLowerCase();
+
+
+    // Reserve the admin username.
+    if (key === "mom") {
+
+        message.className = "error";
+
+        message.textContent =
+            "That username is reserved.";
+
+        return;
+    }
+
+
+    if (accounts[key]) {
+
+        message.className = "error";
+
+        message.textContent =
+            "That username already exists.";
+
+        return;
+    }
+
+
+    accounts[key] = {
+
+        username: username,
+
+        password: password,
+
+        balance: 0,
+
+        saved: 0
+
+    };
+
+
+    saveDatabase();
+
+
+    message.className = "success";
+
+    message.textContent =
+        "Account created!";
+
+
+    document.getElementById(
+        "newUsername"
+    ).value = "";
+
+    document.getElementById(
+        "newPassword"
+    ).value = "";
+
+}
+
+
+/* =========================================================
+   LOGIN
+========================================================= */
+
+function login() {
+
+    const username =
+        document
+            .getElementById("loginUsername")
+            .value
+            .trim();
+
+    const password =
+        document
+            .getElementById("loginPassword")
+            .value;
+
+    const message =
+        document.getElementById("loginMessage");
+
+
+    if (!username || !password) {
+
+        message.className = "error";
+
+        message.textContent =
+            "Enter your username and password.";
+
+        return;
+    }
+
+
+    const key = username.toLowerCase();
+
+
+    /*
+       MOM LOGIN
+
+       The first time "mom" is used,
+       it creates the admin account.
+    */
+
+    if (key === "mom") {
+
+        if (!accounts["mom"]) {
+
+            accounts["mom"] = {
+
+                username: "mom",
+
+                password: password,
+
+                admin: true,
+
+                balance: 0,
+
+                saved: 0
+
+            };
+
+            saveDatabase();
+
+            alert(
+                "MOM admin account created!"
+            );
+
+        }
+
+
+        if (
+            accounts["mom"].password !==
+            password
+        ) {
+
+            message.className = "error";
+
+            message.textContent =
+                "Incorrect MOM password.";
+
+            return;
+        }
+
+
+        currentUser = "mom";
+
+        showAdminPanel();
+
+        return;
+    }
+
+
+    /* NORMAL LOGIN */
+
+    if (!accounts[key]) {
+
+        message.className = "error";
+
+        message.textContent =
+            "Account does not exist.";
+
+        return;
+    }
+
+
+    if (
+        accounts[key].password !==
+        password
+    ) {
+
+        message.className = "error";
+
+        message.textContent =
+            "Incorrect password.";
+
+        return;
+    }
+
+
+    currentUser = key;
+
+    showUserPanel();
+
+}
+
+
+/* =========================================================
+   USER PANEL
+========================================================= */
+
+function showUserPanel() {
+
+    hideAllScreens();
+
+    document
+        .getElementById("userScreen")
+        .classList.remove("hidden");
+
+    updateUserDisplay();
+
+}
+
+
+function updateUserDisplay() {
+
+    const account =
+        accounts[currentUser];
+
+
+    document.getElementById(
+        "welcomeText"
+    ).textContent =
+        "Welcome, " +
+        account.username +
+        "!";
+
+
+    document.getElementById(
+        "balanceValue"
+    ).textContent =
+        "€" +
+        account.balance.toFixed(2);
+
+
+    document.getElementById(
+        "savedValue"
+    ).textContent =
+        "€" +
+        account.saved.toFixed(2);
+
+}
+
+
+/* =========================================================
+   BUY
+========================================================= */
+
+function buyMoney() {
+
+    const amount = Number(
+        prompt(
+            "How much do you want to buy?"
+        )
+    );
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        return;
+    }
+
+
+    const account =
+        accounts[currentUser];
+
+
+    if (amount > account.balance) {
+
+        showUserMessage(
+            "🚨 Insufficient funds!"
+        );
+
+        return;
+    }
+
+
+    account.balance -= amount;
+
+    saveDatabase();
+
+    updateUserDisplay();
+
+    showUserMessage(
+        "Purchase successful!"
+    );
+
+}
+
+
+/* =========================================================
+   SAVE MONEY
+========================================================= */
+
+function saveMoney() {
+
+    const amount = Number(
+        prompt(
+            "How much do you want to save?"
+        )
+    );
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        return;
+    }
+
+
+    const account =
+        accounts[currentUser];
+
+
+    if (amount > account.balance) {
+
+        showUserMessage(
+            "🚨 Insufficient funds!"
+        );
+
+        return;
+    }
+
+
+    account.balance -= amount;
+
+    account.saved += amount;
+
+
+    saveDatabase();
+
+    updateUserDisplay();
+
+    showUserMessage(
+        "Money saved!"
+    );
+
+}
+
+
+/* =========================================================
+   WITHDRAW
+========================================================= */
+
+function withdrawMoney() {
+
+    const amount = Number(
+        prompt(
+            "How much do you want to withdraw?"
+        )
+    );
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        return;
+    }
+
+
+    const account =
+        accounts[currentUser];
+
+
+    if (amount > account.saved) {
+
+        showUserMessage(
+            "🚨 Not enough saved money!"
+        );
+
+        return;
+    }
+
+
+    account.saved -= amount;
+
+    account.balance += amount;
+
+
+    saveDatabase();
+
+    updateUserDisplay();
+
+    showUserMessage(
+        "Money withdrawn!"
+    );
+
+}
+
+
+/* =========================================================
+   USER MESSAGE
+========================================================= */
+
+function showUserMessage(text) {
+
+    const message =
+        document.getElementById(
+            "userMessage"
+        );
+
+    message.className = "success";
+
+    message.textContent = text;
+
+
+    setTimeout(
+        function() {
+
+            message.textContent = "";
+
+        },
+        2500
+    );
+
+}
+
+
+/* =========================================================
+   MOM / ADMIN PANEL
+========================================================= */
+
+function showAdminPanel() {
+
+    hideAllScreens();
+
+    document
+        .getElementById("adminScreen")
+        .classList.remove("hidden");
+
+    refreshAdminPanel();
+
+}
+
+
+/* =========================================================
+   ADMIN ACCOUNT LIST
+========================================================= */
+
+function refreshAdminPanel() {
+
+    const list =
+        document.getElementById(
+            "accountList"
+        );
+
+    list.innerHTML = "";
+
+
+    for (
+        const key in accounts
+    ) {
+
+        if (key === "mom") {
+            continue;
+        }
+
+
+        const account =
+            accounts[key];
+
+
+        const div =
+            document.createElement("div");
+
+
+        div.className = "account";
+
+
+        div.innerHTML = `
+
+            <div class="account-info">
+
+                <div class="account-name">
+                    👤 ${escapeHTML(account.username)}
+                </div>
+
+                <div class="account-money">
+                    💶 Balance:
+                    €${account.balance.toFixed(2)}
+                </div>
+
+                <div class="account-money">
+                    🏦 Saved:
+                    €${account.saved.toFixed(2)}
+                </div>
+
+            </div>
+
+            <button
+                class="increase"
+                onclick="increaseBalance('${key}')"
+            >
+                ➕ Increase balance
+            </button>
+
+        `;
+
+
+        list.appendChild(div);
+
+    }
+
+}
+
+
+/* =========================================================
+   ADMIN INCREASE BALANCE
+========================================================= */
+
+function increaseBalance(key) {
+
+    const account =
+        accounts[key];
+
+
+    const amount = Number(
+        prompt(
+            "How much should be added to " +
+            account.username +
+            "'s balance?"
+        )
+    );
+
+
+    if (
+        !Number.isFinite(amount) ||
+        amount <= 0
+    ) {
+
+        return;
+    }
+
+
+    account.balance += amount;
+
+
+    saveDatabase();
+
+    refreshAdminPanel();
+
+
+    alert(
+        "Added €" +
+        amount.toFixed(2) +
+        " to " +
+        account.username +
+        "'s balance."
+    );
+
+}
+
+
+/* =========================================================
+   HTML SECURITY HELPER
+========================================================= */
+
+function escapeHTML(text) {
+
+    return text
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;")
+        .replaceAll("'", "&#039;");
+
+}
+
+
+/* =========================================================
+   LOGOUT
+========================================================= */
+
+function logout() {
+
+    currentUser = null;
+
+    document.getElementById(
+        "loginUsername"
+    ).value = "";
+
+    document.getElementById(
+        "loginPassword"
+    ).value = "";
+
+    showLogin();
+
+}
+
+
+/* =========================================================
+   START
+========================================================= */
+
+showLogin();
+
+</script>
+
+</body>
+</html>
