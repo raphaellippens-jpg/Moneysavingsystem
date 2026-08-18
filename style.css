@@ -66,7 +66,7 @@ input:focus {
 }
 
 
-/* ALL BUTTONS */
+/* BUTTONS */
 
 button {
     border: none;
@@ -222,7 +222,7 @@ button:active {
 
     border-radius: 15px;
 
-    max-width: 600px;
+    max-width: 650px;
 
     display: flex;
 
@@ -240,6 +240,8 @@ button:active {
 
 .accountInfo {
     text-align: left;
+
+    flex: 1;
 }
 
 .accountName {
@@ -254,8 +256,25 @@ button:active {
     font-size: 15px;
 }
 
+
+/* ADMIN BUTTONS */
+
+.adminButtons {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    justify-content: center;
+}
+
 .increase {
     background: #EF3026;
+
+    color: white;
+}
+
+.delete {
+    background: #333333;
 
     color: white;
 }
@@ -352,7 +371,13 @@ button:active {
         text-align: center;
     }
 
-    .increase {
+    .adminButtons {
+        flex-direction: column;
+    }
+
+    .adminButtons button {
         width: 100%;
+
+        margin: 5px 0;
     }
 }
